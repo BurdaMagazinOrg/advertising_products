@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Contains advertising_products.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function advertising_products_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the advertising_products module.
+    case 'help.page.advertising_products':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function advertising_products_theme() {
+  $theme = [];
+  $theme['advertising_product'] = [
+    'render element' => 'elements',
+    'file' => 'advertising_product.page.inc',
+    'template' => 'advertising_product',
+  ];
+  $theme['advertising_product_content_add_list'] = [
+    'render element' => 'content',
+    'variables' => ['content' => NULL],
+    'file' => 'advertising_product.page.inc',
+  ];
+  return $theme;
+}
+
+/**
+* Implements hook_theme_suggestions_HOOK().
+*/
+function advertising_products_theme_suggestions_advertising_product(array $variables) {
+  $suggestions = array();
+  $entity = $variables['elements']['#advertising_product'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'advertising_product__' . $sanitized_view_mode;
+  $suggestions[] = 'advertising_product__' . $entity->bundle();
+  $suggestions[] = 'advertising_product__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'advertising_product__' . $entity->id();
+  $suggestions[] = 'advertising_product__' . $entity->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function advertising_products_cron() {
+
+  $queue = \Drupal::queue('advertising_product_update');
+
+  // Only put stuff into queue if the queue is empty.
+  // This way we avoid duplicate entries if cron runs again before all API calls have been done.
+  if ($queue->numberOfItems() > 0) {
+    return;
+  }
+
+  $products = \Drupal::entityManager()
+    ->getStorage('advertising_product')
+    ->loadMultiple();
+
+  foreach ($products as $product) {
+    $data = [
+      $product->id(),
+      $product->product_id->value,
+      $product->product_provider->value
+    ];
+    $queue->createItem($data);
+  }
+
+}

@@ -1,0 +1,4 @@
+services:
+  plugin.manager.advertising_products.provider:
+    class: Drupal\advertising_products\AdvertisingProductsProviderManager
+    parent: default_plugin_manager

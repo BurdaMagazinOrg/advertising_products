@@ -1,0 +1,16 @@
+{
+  "name": "drupal/advertising_products",
+  "type": "drupal-module",
+  "description": "Advertising Products",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/advertising_products",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "http://drupal.org/project/issues/advertising_products",
+    "source": "http://cgit.drupalcode.org/advertising_products"
+  },
+  "require": {
+    "symfony/intl": "^3.1"
+  }
+}
