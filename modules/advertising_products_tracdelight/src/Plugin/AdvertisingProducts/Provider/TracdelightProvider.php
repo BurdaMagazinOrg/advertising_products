@@ -4,7 +4,7 @@ namespace Drupal\advertising_products_tracdelight\Plugin\AdvertisingProducts\Pro
 
 use Drupal\advertising_products\AdvertisingProductsProviderBase;
 use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\tracdelight\Tracdelight;
+use Drupal\tracdelight_client\TracdelightClient;
 use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,14 +29,14 @@ class TracdelightProvider extends AdvertisingProductsProviderBase {
   public static $productBundle = 'advertising_product_tracdelight';
 
   /**
-   * @var \Drupal\tracdelight\Tracdelight
+   * @var \Drupal\tracdelight_client\TracdelightClient
    */
   protected $tracdelightService;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entityManager, Tracdelight $tracdelight) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entityManager, TracdelightClient $tracdelight) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entityManager);
     $this->tracdelightService = $tracdelight;
   }
@@ -50,7 +50,7 @@ class TracdelightProvider extends AdvertisingProductsProviderBase {
       $plugin_id,
       $plugin_definition,
       $container->get('entity.manager'),
-      $container->get('tracdelight')
+      $container->get('tracdelight_client')
     );
   }
 
