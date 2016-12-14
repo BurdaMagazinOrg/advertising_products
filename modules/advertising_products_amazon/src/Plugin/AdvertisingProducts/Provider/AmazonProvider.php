@@ -4,6 +4,7 @@ namespace Drupal\advertising_products_amazon\Plugin\AdvertisingProducts\Provider
 
 use Drupal\advertising_products\AdvertisingProductsProviderBase;
 use Drupal\advertising_products_amazon\Amazon;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -99,7 +100,6 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
       if ($image->getHeader('content-type')[0] == 'image/png')  {
         $suffix = '.png';
       }
-      $imageHeader = $image->getHeader('content-type');
       $file = file_save_data($image->getBody(), 'public://' . implode('-', [$this::$productBundle, (string)$product_data->ASIN]) . $suffix, FILE_EXISTS_REPLACE);
       image_path_flush($file->getFileUri());
     }
@@ -116,13 +116,13 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
       $product = $this->entityManager->getStorage('advertising_product')->create($item);
     }
 
-    $product->product_name->value = (string)$product_data->ItemAttributes->Title;
+    $product->product_name->value = Unicode::substr((string)$product_data->ItemAttributes->Title, 0, 255);
     $product->product_description->value = '';
     if ($file) {
       $product->product_image->target_id = $file->id();
       $product->product_image->alt = (string)$product_data->ItemAttributes->Title;
     }
-    $product->product_brand->value = (string)$product_data->ItemAttributes->Brand;
+    $product->product_brand->value = Unicode::substr((string)$product_data->ItemAttributes->Brand, 0, 50);
     $product->product_url->uri = (string)$product_data->DetailPageURL;
     $product->product_url->options = array();
     $product->product_shop->value = 'Amazon';
