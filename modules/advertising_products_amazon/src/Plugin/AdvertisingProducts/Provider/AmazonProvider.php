@@ -99,7 +99,6 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
       if ($image->getHeader('content-type')[0] == 'image/png')  {
         $suffix = '.png';
       }
-      $imageHeader = $image->getHeader('content-type');
       $file = file_save_data($image->getBody(), 'public://' . implode('-', [$this::$productBundle, (string)$product_data->ASIN]) . $suffix, FILE_EXISTS_REPLACE);
       image_path_flush($file->getFileUri());
     }
