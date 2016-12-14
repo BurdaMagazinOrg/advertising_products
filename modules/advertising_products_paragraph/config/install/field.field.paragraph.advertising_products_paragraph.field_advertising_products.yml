@@ -22,6 +22,7 @@ settings:
   handler_settings:
     target_bundles:
       advertising_product_amazon: advertising_product_amazon
+      advertising_product_generic: advertising_product_generic
       advertising_product_tracdelight: advertising_product_tracdelight
     sort:
       field: _none
