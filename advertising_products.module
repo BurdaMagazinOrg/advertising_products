@@ -75,12 +75,14 @@ function advertising_products_cron() {
     ->loadMultiple();
 
   foreach ($products as $product) {
-    $data = [
-      $product->id(),
-      $product->product_id->value,
-      $product->product_provider->value
-    ];
-    $queue->createItem($data);
+    if (isset($product->product_id->value) && isset($product->product_provider->value)) {
+      $data = [
+        $product->id(),
+        $product->product_id->value,
+        $product->product_provider->value
+      ];
+      $queue->createItem($data);
+    }
   }
 
 }
