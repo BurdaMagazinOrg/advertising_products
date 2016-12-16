@@ -319,7 +319,7 @@ class AdvertisingProduct extends ContentEntityBase implements AdvertisingProduct
 
     $fields['product_currency'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Currency'))
-      ->setDescription(t('The currency of the product.'))
+      ->setDescription(t('The currency the product price is in. This must be a 3-letter code from the ISO 4217 list of currency codes ("EUR", "USD" etc.).'))
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
