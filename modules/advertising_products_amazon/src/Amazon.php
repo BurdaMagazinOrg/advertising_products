@@ -62,7 +62,7 @@ class Amazon {
    * @return mixed
    */
   public function getAsinFromUri($url) {
-    if (preg_match('/\/(?P<asin>[a-z0-9]{10})\//i', $url, $matches)) {
+    if (preg_match('/\/(?P<asin>[a-z0-9]{10})/i', $url, $matches)) {
       return $matches['asin'];
     }
     return FALSE;

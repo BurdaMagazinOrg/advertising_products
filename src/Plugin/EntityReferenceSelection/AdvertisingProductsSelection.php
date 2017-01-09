@@ -67,8 +67,6 @@ class AdvertisingProductsSelection extends DefaultSelection {
     if (isset($match)) {
       // Get original input
       $input = \Drupal::request()->query->get('q');
-      // @todo Why do we need this?
-//      $typed_string = array_pop(Tags::explode($input));
       // Determine if a product url is entered
       if ($url_entered = filter_var($input, FILTER_VALIDATE_URL)) {
         // Determine product provider
