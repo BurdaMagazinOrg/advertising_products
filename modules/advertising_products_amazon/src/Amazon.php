@@ -62,8 +62,47 @@ class Amazon {
    * @return mixed
    */
   public function getAsinFromUri($url) {
-    if (preg_match('/\/(?P<asin>[a-z0-9]{10})/i', $url, $matches)) {
-      return $matches['asin'];
+
+    // regex from http://littlegreenfootballs.com/article/44256_Tech_Note-_A_Regular_Expression_to_Extract_the_ASIN_Product_Code_From_Any_Amazon_URL
+    $regex = '~
+    (?:www\.)?              # optionally starts with www.
+    ama?zo?n\.              # also allow shortened amzn.com URLs
+    (?:
+        com                 # match all Amazon domains
+        |
+        ca
+        |
+        co\.uk
+        |
+        co\.jp
+        |
+        de
+        |
+        fr
+    )
+    /
+    (?:                     # here comes the stuff before the ASIN
+        exec/obidos/ASIN/   # the possible components of a URL
+        |
+        o/
+        |
+        gp/product/
+        |
+        (?:                 # the dp/ format may contain a title
+            (?:[^"\'/]*)/   # anything but a slash or quote
+        )?                  # optional
+        dp/
+        |                   # if short format, nothing before ASIN
+    )
+    ([A-Z0-9]{10})          # capture group $1 contains the ASIN
+    (?:                     # everything after the ASIN
+        (?:/|\?|\#)         # beginning with /, ? or #
+        (?:[^"\'\s]*)       # everything up to quote or white space
+    )?                      # optional
+~isx';
+
+    if (preg_match($regex, $url, $matches)) {
+      return $matches[1];
     }
     return FALSE;
   }
