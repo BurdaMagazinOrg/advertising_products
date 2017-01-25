@@ -100,7 +100,7 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
       if ($image->getHeader('content-type')[0] == 'image/png')  {
         $suffix = '.png';
       }
-      $file = file_save_data($image->getBody(), 'public://' . implode('-', [$this::$productBundle, (string)$product_data->ASIN]) . $suffix, FILE_EXISTS_REPLACE);
+      $file = file_save_data($image->getBody(), 'public://' . implode('-', [$this::$productBundle, (string) $product_data->ASIN]) . $suffix, FILE_EXISTS_REPLACE);
       image_path_flush($file->getFileUri());
     }
 
@@ -112,7 +112,7 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
       // Create new product entity
       $item['type'] = $this::$productBundle;
       $item['product_provider'] = $this->getPluginId();
-      $item['product_id'] = (string)$product_data->ASIN;
+      $item['product_id'] = (string) $product_data->ASIN;
       $product = $this->entityManager->getStorage('advertising_product')->create($item);
     }
 
@@ -120,19 +120,22 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
     $product->product_description->value = '';
     if ($file) {
       $product->product_image->target_id = $file->id();
-      $product->product_image->alt = (string)$product_data->ItemAttributes->Title;
+      $product->product_image->alt = (string) $product_data->ItemAttributes->Title;
     }
     $product->product_brand->value = Unicode::substr((string)$product_data->ItemAttributes->Brand, 0, 50);
-    $product->product_url->uri = (string)$product_data->DetailPageURL;
+    $product->product_url->uri = (string) $product_data->DetailPageURL;
     $product->product_url->options = array();
     $product->product_shop->value = 'Amazon';
-    // Unpublished by default
-    $product->status->value = 0;
-    // Fill price if we have an offer and set as published
+    $product->status->value = 1;  // TODO: Try to add a 'in stock' update.
+
+    // Set listing price from RepsonseGroup 'ItemAttributes'
+    $product->product_price->value = (int) $product_data->ItemAttributes->ListPrice->Amount / 100;
+    $product->product_currency->value = (string) $product_data->ItemAttributes->ListPrice->CurrencyCode;
+
+    // Adjust price if we have an offer.
     if ((int)$product_data->Offers->TotalOffers > 0) {
-      $product->status->value = 1;
-      $product->product_price->value = (int)$product_data->Offers->Offer->OfferListing->Price->Amount / 100;
-      $product->product_currency->value = (string)$product_data->Offers->Offer->OfferListing->Price->CurrencyCode;
+      $product->product_price->value = (int) $product_data->Offers->Offer->OfferListing->Price->Amount / 100;
+      $product->product_currency->value = (string) $product_data->Offers->Offer->OfferListing->Price->CurrencyCode;
     }
 
     // Save product entity
@@ -163,9 +166,10 @@ class AmazonProvider extends AdvertisingProductsProviderBase {
    * {@inheritdoc}
    */
   public function setProductInactive($entity_id) {
-    $product = $this->entityManager->getStorage('advertising_product')->load($entity_id);
-    $product->status->value = 0;
-    $product->save();
+    if ($product = $this->entityManager->getStorage('advertising_product')->load($entity_id)) {
+      $product->status->value = 0;
+      $product->save();
+    }
   }
 
 }
